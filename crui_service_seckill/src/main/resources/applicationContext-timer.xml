@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/task
+            http://www.springframework.org/schema/task/spring-task.xsd">
+
+
+    <!--开启任务调度-->
+<!--    <task:annotation-driven></task:annotation-driven>-->
+    <task:annotation-driven executor="taskExcutor" scheduler="seckillScheduler"/>
+    <task:executor id="seckillExcutor" pool-size="10"/>
+    <task:scheduler id="seckillScheduler" pool-size="10"/>
+
+<!--    配置线程池-->
+    <bean id="taskExcutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="corePoolSize" value="10"/>
+        <property name="maxPoolSize" value="100"/>
+        <property name="queueCapacity" value="200"/>
+        <property name="keepAliveSeconds" value="3000"/>
+        <property name="rejectedExecutionHandler">
+            <bean class="java.util.concurrent.ThreadPoolExecutor.CallerRunsPolicy"/>
+        </property>
+    </bean>
+</beans>

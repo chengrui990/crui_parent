@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="js/stomp.js"></script>
+    <script>
+        // Stomp.js boilerplate
+        var client = Stomp.client('ws://' + 'vubuntu51' + ':15674/ws');
+        var on_connect = function(x) {
+            id = client.subscribe("/exchange/paynotify", function(d) {
+                alert(d.body);
+            });
+        };
+        var on_error =  function() {
+            console.log('error');
+        };
+        client.connect('webguest', 'webguest', on_connect, on_error, '/');
+    </script>
+</head>
+<body>
+
+</body>
+</html>

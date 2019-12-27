@@ -1,0 +1,52 @@
+1.ubuntu-raspi(192.168.1.20)(树莓派)
+zookeeper:
+zkServer.sh start
+
+mysql:
+selluser:cr123456@CR / root:cr990536551@CR
+
+2.(wsl ubuntu)
+redis:
+win10-notebook(192.168.1.25),port=16379,password=111111
+sudo service redis-server start (ubuntu)sudo /etc/init.d/redis-server restart
+
+3.vubuntu51 (虚拟机)
+
+./bin/elasticsearch
+
+kibana 独立于elasticsearch运行 ./bin/kibana
+管理地址http://192.168.1.51:5601
+
+RabbitMQ
+service rabbitmq-server start    # 启动
+service rabbitmq-server stop     # 停止
+service rabbitmq-server restart  # 重启
+
+rabbitmq-plugins enable rabbitmq_management   # 启用web端可视化操作界面插件
+service rabbitmq-server restart    # 重启
+
+通过 http://vubuntu51:15672 查看，使用默认账户guest或admin 登录。
+
+4.win10-notebook
+cas
+启动tomcat8中
+http://win10-notebook:8080/cas
+admin:admin
+
+
+dubbo-admin
+启动tomcat8中
+http://win10-notebook:8080/dubbo-admin-2.6.0/
+root:root/guest:guest
+
+
+远程机器上natapp使用：
+natapp文件所在目录 执行./natapp
+配置文件config.ini 配置隧道token
+
+远程机器cpolar使用：
+开启ssh：sudo service ssh start
+映射ssh服务端口：
+cpolar所在目录执行 ./cpolar tcp 2222   
+
+

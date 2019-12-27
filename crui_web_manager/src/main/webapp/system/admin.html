@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>admin管理</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../plugins/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+
+    <!-- 上传图片框样式，不使用上传组件可以删除此样式 -->
+    <style>
+        .avatar-uploader .el-upload {
+            border: 1px dashed #d9d9d9;
+            border-radius: 6px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .avatar-uploader .el-upload:hover {
+            border-color: #409EFF;
+        }
+        .avatar-uploader-icon {
+            font-size: 28px;
+            color: #8c939d;
+            width: 150px;
+            height: 70px;
+            line-height: 150px;
+            text-align: center;
+        }
+        .avatar {
+            width: 150px;
+            height: 70px;
+            display: block;
+        }
+
+    </style>
+</head>
+<body class="hold-transition">
+<div id="app">
+    <div><br></div>
+            <div class="add-form" >
+                <el-form label-width="100px" align="center">
+                    <!-- 图片上传代码 如页面有图片上传功能放开注释 ****
+                    <el-form-item label="头像">
+                        <el-upload
+                                class="avatar-uploader"
+                                action="/upload/native.do"
+                                :show-file-list="false"
+                                :on-success="handleAvatarSuccess"
+                                :before-upload="beforeAvatarUpload">
+                            <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                        </el-upload></el-form-item>-->
+
+
+                </el-form>
+
+                <el-form :model="ruleForm2" status-icon :rules="rules2" ref="ruleForm2" label-width="100px" class="demo-ruleForm">
+                    <el-form-item label="用户名">
+                        <el-input disabled v-model="ruleForm2.loginName"></el-input></el-form-item>
+
+                    <el-form-item label="旧密码" prop="oldPass">
+                        <el-input type="password" v-model="ruleForm2.oldPass" auto-complete="off"></el-input></el-form-item>
+
+                    <el-form-item label="新密码" prop="newPass">
+                        <el-input type="password" v-model="ruleForm2.newPass" auto-complete="off"></el-input></el-form-item>
+
+                    <el-form-item label="确认密码" prop="checkPass">
+                        <el-input type="password" v-model="ruleForm2.checkPass" auto-complete="off"></el-input></el-form-item>
+
+                    <el-form-item>
+                        <el-button type="primary" @click="submitForm('ruleForm2')">提交</el-button>
+                        <el-button @click="resetForm('ruleForm2')">重置</el-button>
+                    </el-form-item>
+                </el-form>
+
+
+            </div>
+
+</div>
+</body>
+<script src="/js/vue.js"></script>
+<script src="/js/axios.js"></script>
+<script src="/js/elementui.js"></script>
+<script>
+     new Vue({
+        el: '#app',
+        data(){
+            let checkOldPass = (rule, value, callback) => {
+                if (value === '') {
+                    return callback(new Error('旧密码不能为空'));
+                }else {
+                    callback();
+                }
+            };
+            let validateNewPass = (rule, value, callback) => {
+                if (value === '') {
+                    callback(new Error('请输入新密码'));
+                } else {
+                    if (this.ruleForm2.checkPass !== '') {
+                        this.$refs.ruleForm2.validateField('checkPass');
+                    }
+                    callback();
+                }
+            };
+            let validatePass2 = (rule, value, callback) => {
+                if (value === '') {
+                    callback(new Error('请再次输入密码'));
+                } else if (value !== this.ruleForm2.newPass) {
+                    callback(new Error('两次输入密码不一致!'));
+                } else {
+                    callback();
+                }
+            };
+            return {
+                pojo: {},
+                imageUrl: '',
+                ruleForm2: {
+                    loginName:'',
+                    newPass: '',
+                    checkPass: '',
+                    oldPass: ''
+                },
+                rules2: {
+                    newPass: [
+                        { validator: validateNewPass, trigger: 'blur' }
+                    ],
+                    checkPass: [
+                        { validator: validatePass2, trigger: 'blur' }
+                    ],
+                    oldPass: [
+                        { validator: checkOldPass, trigger: 'blur' }
+                    ]
+                }
+            }
+        },
+        created(){
+            this.fetchData();
+        },
+        methods:{
+            fetchData (){
+                axios.get(`/login/showName.do`).then(response => {
+                    this.ruleForm2.loginName = response.data.name;
+                });
+            },
+            submitForm(formName){
+                this.$refs[formName].validate(valid => {
+                    if (valid) {
+                        axios.post(`/admin/update.do`,this.ruleForm2).then(response => {
+                            if (0 === response.data.code){
+                                this.$alert('请退出重新登录', '修改成功', {
+                                    confirmButtonText: '确定',
+                                    callback: action => {
+                                        window.parent.location.href='/login.html';
+                                    }
+                                });
+                            }else {
+                                this.$alert(response.data.message,'修改密码失败');
+                            }
+                        });
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
+                });
+            },
+            resetForm(formName){
+                this.$refs[formName].resetFields();
+            },
+
+			/* ****图片上传相关代码  如页面有图片上传功能放开注释 **** */
+            handleAvatarSuccess(res, file) {
+                this.imageUrl = file.response;
+            },
+            beforeAvatarUpload(file) {
+                const isJPG = file.type === 'image/jpeg';
+                const isLt2M = file.size / 1024 / 1024 < 2;
+
+                if (!isJPG) {
+                    this.$message.error('上传头像图片只能是 JPG 格式!');
+                }
+                if (!isLt2M) {
+                    this.$message.error('上传头像图片大小不能超过 2MB!');
+                }
+                return isJPG && isLt2M;
+            }
+        }
+    })
+</script>
+</html>

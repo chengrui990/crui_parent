@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+<!--	分布式id生成-->
+	<bean id="idWorker" class="com.crui.util.IdWorker">
+		<constructor-arg index="0" value="1"/>
+		<constructor-arg index="1" value="1"/>
+	</bean>
+
+	<bean id="restHighLevelClient" class="com.crui.service.impl.RestClientFactory" factory-method="getRestHighLevelClient">
+
+		<constructor-arg index="0" value="192.168.1.51"/>
+		<constructor-arg index="1" value="9200"/>
+	</bean>
+</beans>
